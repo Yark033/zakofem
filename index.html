@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Закофем — кофейня</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14281d; --surface:#1d3828; --foam:#f2ece0; --muted:#b9c4b6;
+  --caramel:#e9a64b; --espresso:#3b2218;
+  --display:'Unbounded','Arial Black',Impact,sans-serif;
+  --body:'Manrope','Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--foam);font-family:var(--body);line-height:1.6;font-size:17px}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--caramel);outline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* hero */
+.hero{min-height:92vh;display:flex;align-items:center;padding:48px 0}
+.hero .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(2.6rem,9vw,6.4rem);line-height:1;letter-spacing:-.03em}
+.hero p{max-width:30ch;margin-top:24px;color:var(--muted);font-size:1.15rem}
+.hero a.cta{display:inline-block;margin-top:32px;background:var(--caramel);color:var(--espresso);font-weight:600;text-decoration:none;padding:14px 28px;border-radius:999px;transition:transform .2s}
+.hero a.cta:hover{transform:translateY(-3px)}
+.cup{width:100%;max-width:340px;justify-self:center;overflow:visible}
+.steam path{fill:none;stroke:var(--foam);stroke-width:5;stroke-linecap:round;opacity:0;animation:rise 3.6s ease-in-out infinite}
+.steam path:nth-child(2){animation-delay:1.2s}
+.steam path:nth-child(3){animation-delay:2.4s}
+@keyframes rise{0%{opacity:0;transform:translateY(24px)}30%{opacity:.7}100%{opacity:0;transform:translateY(-34px)}}
+.cup-body{animation:sway 6s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes sway{50%{transform:rotate(-1.5deg)}}
+
+/* about */
+.about{padding:72px 0;border-top:1px solid #ffffff1f}
+.about h2,.menu h2{font-family:var(--display);font-weight:500;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.02em;margin-bottom:20px}
+.about p{max-width:62ch;color:var(--muted)}
+.about p+p{margin-top:14px}
+
+/* menu */
+.menu{padding:72px 0 140px;border-top:1px solid #ffffff1f}
+.menu .hint{color:var(--muted);margin-bottom:32px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.drink{position:relative;overflow:hidden;min-height:230px;background:var(--surface);border-radius:20px;padding:24px 24px 24px 84px;cursor:pointer;transition:transform .25s,box-shadow .25s}
+.drink:hover,.drink.open,.drink:focus-within{transform:translateY(-6px);box-shadow:0 14px 30px #0006}
+.layers{position:absolute;left:24px;top:24px;bottom:24px;width:36px;border-radius:18px;background:var(--layers)}
+.drink h3{font-family:var(--display);font-weight:500;font-size:1.5rem}
+.drink .meta{color:var(--muted);margin-top:4px}
+.drink .price{position:absolute;right:24px;top:24px;font-weight:600;color:var(--caramel)}
+.reveal{position:absolute;inset:0;background:var(--caramel);color:var(--espresso);padding:24px 24px 24px 84px;display:flex;flex-direction:column;justify-content:space-between;transform:translateY(101%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.drink:hover .reveal,.drink.open .reveal,.drink:focus-within .reveal{transform:translateY(0)}
+.reveal .layers{background:var(--layers);box-shadow:0 0 0 3px var(--espresso)}
+.reveal p{font-weight:600;font-size:1.05rem;line-height:1.4}
+.buy{align-self:flex-start;background:var(--espresso);color:var(--foam);border:0;font:inherit;font-weight:600;padding:12px 24px;border-radius:999px;cursor:pointer;transition:transform .15s}
+.buy:hover{transform:scale(1.05)}
+.buy:active{transform:scale(.96)}
+
+/* cart */
+.cart{position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);display:flex;gap:16px;align-items:center;background:var(--foam);color:var(--espresso);padding:12px 12px 12px 24px;border-radius:999px;box-shadow:0 10px 30px #0008;transition:transform .4s cubic-bezier(.2,.8,.2,1);z-index:5}
+.cart.show{transform:translate(-50%,0)}
+.cart.bump{animation:bump .3s}
+@keyframes bump{50%{transform:translate(-50%,-6px)}}
+.cart button{background:var(--espresso);color:var(--foam);border:0;font:inherit;font-weight:600;padding:10px 20px;border-radius:999px;cursor:pointer}
+.toast{position:fixed;left:50%;top:20px;transform:translate(-50%,-160%);background:var(--caramel);color:var(--espresso);font-weight:600;padding:14px 24px;border-radius:14px;transition:transform .4s;z-index:6}
+.toast.show{transform:translate(-50%,0)}
+
+footer{padding:32px 0;color:var(--muted);font-size:.9rem;border-top:1px solid #ffffff1f}
+
+@media (max-width:760px){.hero .wrap{grid-template-columns:1fr}.cup{max-width:220px;order:-1}.hero{min-height:auto}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.steam path{opacity:.5}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Закофем</h1>
+      <p>Кофейня, куда заходят на пять минут и остаются подольше.</p>
+      <a class="cta" href="menu.html" target="_blank" rel="noopener">Смотреть меню</a>
+    </div>
+    <svg class="cup" viewBox="0 0 300 300" role="img" aria-label="Чашка горячего кофе">
+      <g class="steam">
+        <path d="M105 110 C85 85,125 70,105 40"/>
+        <path d="M150 110 C130 85,170 70,150 40"/>
+        <path d="M195 110 C175 85,215 70,195 40"/>
+      </g>
+      <g class="cup-body">
+        <path d="M60 130 H240 V190 C240 235,205 262,150 262 C95 262,60 235,60 190 Z" fill="#f2ece0"/>
+        <path d="M240 150 H262 C285 150,285 205,240 205" fill="none" stroke="#f2ece0" stroke-width="14" stroke-linecap="round"/>
+        <ellipse cx="150" cy="130" rx="90" ry="12" fill="#3b2218"/>
+        <ellipse cx="150" cy="276" rx="95" ry="9" fill="#0003"/>
+      </g>
+    </svg>
+  </div>
+</header>
+
+<section class="about">
+  <div class="wrap">
+    <h2>О кофейне</h2>
+    <p>«Закофем» — небольшая кофейня для тех, кто любит начинать день с хорошей чашки. Мы варим кофе из свежеобжаренных зёрен и не торопим: садитесь у окна или берите с собой.</p>
+    <p>Меню короткое, зато каждая позиция сделана так, как мы пили бы её сами. Приходите за кофем.</p>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="wrap">
+    <h2>Любимое гостей</h2>
+    <p class="hint">Наведите на напиток (или нажмите на телефоне), чтобы заказать.</p>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<footer><div class="wrap">© Закофем. Заходите за кофем.</div></footer>
+
+<div class="cart" id="cart" aria-live="polite">
+  <span id="cartText"></span>
+  <button id="order" type="button">Оформить</button>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const CUR = '₸';
+const drinks = [
+  {n:'Латте', v:'300 мл', p:1500, t:'Нежный кофе под воздушной молочной пенкой. Один глоток, и утро уже удалось.',
+   l:'linear-gradient(#f2ece0 0 12%,#d9b58a 12% 70%,#3b2218 70%)'},
+  {n:'Раф', v:'300 мл', p:1800, t:'Эспрессо, сливки и ваниль. Тот самый сладкий раф, за которым возвращаются.',
+   l:'linear-gradient(#f2ece0 0 8%,#e8cfa3 8% 62%,#5a3322 62%)'},
+  {n:'Капучино', v:'200 мл', p:1400, t:'Густая пышная пена и ровно столько кофе, сколько нужно для хорошего настроения.',
+   l:'linear-gradient(#f2ece0 0 35%,#b98456 35% 60%,#3b2218 60%)'},
+  {n:'Американо', v:'250 мл', p:1100, t:'Чистый вкус без лишнего. Для тех, кто пьёт именно кофе.',
+   l:'linear-gradient(#6b4330 0 15%,#3b2218 15%)'},
+  {n:'Эспрессо', v:'30 мл', p:900, t:'Маленький, крепкий, быстрый. Три глотка энергии на весь день.',
+   l:'linear-gradient(#c58b55 0 10%,#2a160d 10%)'}
+];
+const KEY = 'zakofem-cart';
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
+const cart = load();
+const grid = document.getElementById('grid');
+const cartEl = document.getElementById('cart');
+const cartText = document.getElementById('cartText');
+const toast = document.getElementById('toast');
+
+drinks.forEach((d, i) => {
+  const el = document.createElement('article');
+  el.className = 'drink';
+  el.tabIndex = 0;
+  el.style.setProperty('--layers', d.l);
+  el.innerHTML =
+    '<div class="layers"></div><h3></h3><div class="meta"></div><div class="price"></div>' +
+    '<div class="reveal"><div class="layers"></div><p></p><button class="buy" type="button"></button></div>';
+  el.querySelector('h3').textContent = d.n;
+  el.querySelector('.meta').textContent = d.v;
+  el.querySelector('.price').textContent = d.p + ' ' + CUR;
+  el.querySelector('.reveal p').textContent = d.t;
+  const btn = el.querySelector('.buy');
+  btn.textContent = 'Купить за ' + d.p + ' ' + CUR;
+  btn.addEventListener('click', e => { e.stopPropagation(); add(d.n, d.p); });
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.drink.open').forEach(o => { if (o !== el) o.classList.remove('open'); });
+    el.classList.toggle('open');
+  });
+  grid.appendChild(el);
+});
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast.t);
+  showToast.t = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function render(){
+  let count = 0, sum = 0;
+  Object.keys(cart).forEach(k => { count += cart[k].q; sum += cart[k].q * cart[k].p; });
+  if (!count){ cartEl.classList.remove('show'); return; }
+  cartText.textContent = 'В корзине: ' + count + ' · ' + sum + ' ' + CUR;
+  cartEl.classList.add('show');
+  cartEl.classList.remove('bump');
+  void cartEl.offsetWidth;
+  cartEl.classList.add('bump');
+}
+function add(name, price){
+  cart[name] = cart[name] || {p: price, q: 0};
+  cart[name].q++;
+  save();
+  showToast(name + ' добавлен в корзину');
+  render();
+}
+document.getElementById('order').addEventListener('click', () => {
+  Object.keys(cart).forEach(k => delete cart[k]);
+  save();
+  render();
+  showToast('Заказ принят. Ждём вас в «Закофем»!');
+});
+window.addEventListener('storage', e => {
+  if (e.key !== KEY) return;
+  Object.keys(cart).forEach(k => delete cart[k]);
+  Object.assign(cart, load());
+  render();
+});
+render();
+</script>
+</body>
+</html>

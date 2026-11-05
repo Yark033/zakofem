@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Меню — Закофем</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14281d; --surface:#1d3828; --foam:#f2ece0; --muted:#b9c4b6;
+  --caramel:#e9a64b; --espresso:#3b2218;
+  --display:'Unbounded','Arial Black',Impact,sans-serif;
+  --body:'Manrope','Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{background:var(--bg);color:var(--foam);font-family:var(--body);line-height:1.6;font-size:17px}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--caramel);outline-offset:3px}
+.wrap{max-width:860px;margin:0 auto;padding:0 24px}
+
+.top{position:sticky;top:0;z-index:4;background:var(--bg);border-bottom:1px solid #ffffff1f}
+.top .wrap{display:flex;align-items:center;gap:20px;padding-top:14px;padding-bottom:14px;flex-wrap:wrap}
+.top .back{text-decoration:none;font-family:var(--display);font-weight:800;font-size:1.1rem}
+.top nav{display:flex;gap:10px;margin-left:auto}
+.top nav a{text-decoration:none;padding:8px 18px;border-radius:999px;background:var(--surface);font-weight:600;transition:background .2s,color .2s}
+.top nav a:hover{background:var(--caramel);color:var(--espresso)}
+
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2rem,7vw,3.6rem);letter-spacing:-.03em;line-height:1.05;padding:56px 0 8px}
+.lead{color:var(--muted);margin-bottom:24px}
+section{padding:40px 0 8px}
+h2{font-family:var(--display);font-weight:500;font-size:clamp(1.4rem,4vw,2rem);letter-spacing:-.02em;margin-bottom:12px}
+
+.item{display:grid;grid-template-columns:1fr auto auto;gap:6px 20px;align-items:center;padding:18px 16px;margin:0 -16px;border-radius:16px;border-bottom:1px solid #ffffff14;transition:background .2s}
+.item:hover{background:var(--surface)}
+.item h3{font-weight:600;font-size:1.1rem}
+.item p{grid-column:1;color:var(--muted);font-size:.95rem}
+.price{font-weight:600;color:var(--caramel);white-space:nowrap}
+.buy{grid-row:1 / span 2;grid-column:3;background:var(--caramel);color:var(--espresso);border:0;font:inherit;font-weight:600;padding:10px 22px;border-radius:999px;cursor:pointer;transition:transform .15s}
+.buy:hover{transform:scale(1.06)}
+.buy:active{transform:scale(.95)}
+.item .price{grid-row:1 / span 2;grid-column:2}
+
+.cart{position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);display:flex;gap:16px;align-items:center;background:var(--foam);color:var(--espresso);padding:12px 12px 12px 24px;border-radius:999px;box-shadow:0 10px 30px #0008;transition:transform .4s cubic-bezier(.2,.8,.2,1);z-index:5}
+.cart.show{transform:translate(-50%,0)}
+.cart.bump{animation:bump .3s}
+@keyframes bump{50%{transform:translate(-50%,-6px)}}
+.cart button{background:var(--espresso);color:var(--foam);border:0;font:inherit;font-weight:600;padding:10px 20px;border-radius:999px;cursor:pointer}
+.toast{position:fixed;left:50%;top:76px;transform:translate(-50%,-220%);background:var(--caramel);color:var(--espresso);font-weight:600;padding:14px 24px;border-radius:14px;transition:transform .4s;z-index:6}
+.toast.show{transform:translate(-50%,0)}
+footer{padding:48px 0 110px;color:var(--muted);font-size:.9rem}
+
+@media (max-width:560px){
+  .item{grid-template-columns:1fr auto}
+  .item .price{grid-row:1;grid-column:2}
+  .buy{grid-row:2;grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <a class="back" href="index.html">Закофем</a>
+    <nav aria-label="Разделы меню">
+      <a href="#coffee">Кофе</a>
+      <a href="#bakery">Выпечка</a>
+      <a href="#shop">Аксессуары</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <h1>Всё меню</h1>
+  <p class="lead">Кофе, выпечка и вещи, которые удобно забрать с собой.</p>
+  <div id="menu"></div>
+</main>
+
+<footer><div class="wrap">© Закофем. Заходите за кофем.</div></footer>
+
+<div class="cart" id="cart" aria-live="polite">
+  <span id="cartText"></span>
+  <button id="order" type="button">Оформить</button>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const CUR = '₸';
+const sections = [
+  {id:'coffee', title:'Кофе', items:[
+    ['Эспрессо','30 мл. Маленький, крепкий, быстрый.',900],
+    ['Американо','250 мл. Чистый вкус без лишнего.',1100],
+    ['Капучино','200 мл. Густая пена и ровно столько кофе, сколько нужно.',1400],
+    ['Латте','300 мл. Нежный кофе под воздушной молочной пенкой.',1500],
+    ['Раф','300 мл. Эспрессо, сливки и ваниль.',1800]
+  ]},
+  {id:'bakery', title:'Выпечка', items:[
+    ['Круассан с маслом','Хрустящая корочка, внутри мягкие слои. Каждое утро свежий.',1100],
+    ['Круассан с миндалём','С миндальным кремом и лепестками миндаля.',1500],
+    ['Синнабон','Тёплая булочка с корицей и сливочным кремом.',1700],
+    ['Чизкейк «Нью-Йорк»','Плотный сливочный, с ягодным соусом.',2200],
+    ['Шоколадный маффин','Влажный, с кусочками тёмного шоколада.',1200]
+  ]},
+  {id:'shop', title:'Аксессуары', items:[
+    ['Термокружка «Закофем»','350 мл. Держит тепло несколько часов.',6500],
+    ['Керамическая чашка','Для домашнего кофе, 250 мл.',4500],
+    ['Кофе в зёрнах','250 г. Свежая обжарка, как в кофейне.',5200],
+    ['Эко-сумка «Закофем»','Плотный хлопок, пригодится для покупок и выпечки.',3000]
+  ]}
+];
+const all = [];
+const KEY = 'zakofem-cart';
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
+const cart = load();
+const root = document.getElementById('menu');
+const cartEl = document.getElementById('cart');
+const cartText = document.getElementById('cartText');
+const toast = document.getElementById('toast');
+
+sections.forEach(s => {
+  const sec = document.createElement('section');
+  sec.id = s.id;
+  const h = document.createElement('h2');
+  h.textContent = s.title;
+  sec.appendChild(h);
+  s.items.forEach(it => {
+    const idx = all.push({n:it[0], p:it[2]}) - 1;
+    const row = document.createElement('div');
+    row.className = 'item';
+    row.innerHTML = '<h3></h3><p></p><div class="price"></div><button class="buy" type="button">Купить</button>';
+    row.querySelector('h3').textContent = it[0];
+    row.querySelector('p').textContent = it[1];
+    row.querySelector('.price').textContent = it[2] + ' ' + CUR;
+    row.querySelector('.buy').addEventListener('click', () => add(it[0], it[2]));
+    sec.appendChild(row);
+  });
+  root.appendChild(sec);
+});
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast.t);
+  showToast.t = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+function render(){
+  let count = 0, sum = 0;
+  Object.keys(cart).forEach(k => { count += cart[k].q; sum += cart[k].q * cart[k].p; });
+  if (!count){ cartEl.classList.remove('show'); return; }
+  cartText.textContent = 'В корзине: ' + count + ' · ' + sum + ' ' + CUR;
+  cartEl.classList.add('show');
+  cartEl.classList.remove('bump');
+  void cartEl.offsetWidth;
+  cartEl.classList.add('bump');
+}
+function add(name, price){
+  cart[name] = cart[name] || {p: price, q: 0};
+  cart[name].q++;
+  save();
+  showToast(name + ' добавлен в корзину');
+  render();
+}
+document.getElementById('order').addEventListener('click', () => {
+  Object.keys(cart).forEach(k => delete cart[k]);
+  save();
+  render();
+  showToast('Заказ принят. Ждём вас в «Закофем»!');
+});
+window.addEventListener('storage', e => {
+  if (e.key !== KEY) return;
+  Object.keys(cart).forEach(k => delete cart[k]);
+  Object.assign(cart, load());
+  render();
+});
+render();
+</script>
+</body>
+</html>
